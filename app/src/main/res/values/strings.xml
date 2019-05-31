@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Man Maps</string>
+    <string name="querry_location">Address</string>
+    <string name="button_send">Search</string>
+    <string name="compass_degree">0°</string>
+    <string name="distance">loading</string>
+</resources>
