@@ -1,4 +1,4 @@
-package com.example.manmaps3;
+package com.example.manmaps;
 
 import android.Manifest;
 import android.content.DialogInterface;

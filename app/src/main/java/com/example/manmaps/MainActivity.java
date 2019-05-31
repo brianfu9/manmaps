@@ -1,4 +1,4 @@
-package com.example.manmaps3;
+package com.example.manmaps;
 
 import android.content.Intent;
 import android.location.Address;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.manmaps3">
+    package="com.example.manmaps">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <application
@@ -11,9 +11,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".CompassActivity"
-            android:parentActivityName=".MainActivity"></activity>
-        <activity android:name=".MainActivity">
+            android:name="com.example.manmaps.CompassActivity"
+            android:parentActivityName="com.example.manmaps.MainActivity"></activity>
+        <activity android:name="com.example.manmaps.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
