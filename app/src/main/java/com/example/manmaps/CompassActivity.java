@@ -22,6 +22,9 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
 public class CompassActivity extends AppCompatActivity implements SensorEventListener {
 
     ImageView compass_img;
@@ -34,7 +37,7 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
     float[] orientation = new float[3];
     private FusedLocationProviderClient fusedLocationClient;
     private Location myLocation;
-    private Location myDestination = new Location("Brian");
+    private Location myDestination;
     private LocationCallback locationCallback;
     private SensorManager mSensorManager;
     private Sensor mRotationV, mAccelerometer, mMagnetometer;
@@ -54,10 +57,38 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
         Intent intent = getIntent();
         double destinationLatitude = Double.parseDouble(intent.getStringExtra(MainActivity.DESTINATION_LATITUDE));
         double destinationLongitude = Double.parseDouble(intent.getStringExtra(MainActivity.DESTINATION_LONGITUDE));
+        System.out.println("******************** in compass activity " + destinationLatitude + " " + destinationLongitude);
+        myDestination = new Location("Brian");
         myDestination.setLatitude(destinationLatitude);
         myDestination.setLongitude(destinationLongitude);
 
-        initLocationUpdates();
+        if (myDestination == null) {
+            System.out.println("******************** myDestination is broken");
+        }
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        locationRequest = LocationRequest.create();
+        locationRequest.setInterval(5000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    myLocation = location;
+                }
+                System.out.println("********************    myLocation " + myLocation.getLongitude() + ", " + myLocation.getLatitude());
+            }
+        };
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 42);
+        }
+        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null /* Looper */);
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
         compass_img = findViewById(R.id.img_arrow);
@@ -80,28 +111,6 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
     }
 
     //**************************
-
-    private void initLocationUpdates() {
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setInterval(5000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-        locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                if (locationResult == null) {
-                    return;
-                }
-                for (Location location : locationResult.getLocations()) {
-                    myLocation = location;
-                }
-                System.out.println("myLocation " + myLocation.getLongitude() + ", " + myLocation.getLatitude());
-            }
-        };
-
-        startLocationUpdates();
-    }
 
     public void start() {
         startLocationUpdates();
@@ -172,7 +181,7 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
             mAzimuth = ((mAzimuth - Math.round(myLocation.bearingTo(myDestination))) + 360) % 360;
             compass_img.setRotation(-mAzimuth);
             txt_compass.setText(mAzimuth + "°");
-            txt_location.setText(Math.round(myLocation.distanceTo(myDestination)) + " m");
+            txt_location.setText(NumberFormat.getNumberInstance(Locale.US).format(Math.round(myLocation.distanceTo(myDestination))) + " m");
             System.out.println(mAzimuth);
         } catch (Exception e) {
             System.out.println(e);
