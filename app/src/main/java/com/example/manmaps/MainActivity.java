@@ -175,17 +175,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             SensorManager.getOrientation(rMat, orientation);
             mAzimuth = (int) (Math.toDegrees(SensorManager.getOrientation(rMat, orientation)[0]) + 360) % 360;
         }
+        if (myDestination != null) {
+            try {
+                int bearing = Math.round(myLocation.bearingTo(myDestination));
+                int facing_direction = Math.floorMod(mAzimuth - bearing + 360, 360);
+                compass_img.setRotation(-facing_direction);
+                txt_compass.setText(facing_direction + "°");
+                txt_location.setText(NumberFormat.getNumberInstance(Locale.US).format(Math.round(myLocation.distanceTo(myDestination))) + " m");
+                System.out.println("Azimuth: " + mAzimuth + "° bearing: " + bearing + "° facing: " + facing_direction + "°");
+            } catch (Exception e) {
+                System.out.println(e);
+                txt_location.setText("I'm lost");
 
-        try {
-            mAzimuth = ((mAzimuth - Math.round(myLocation.bearingTo(myDestination))) + 360) % 360;
-            compass_img.setRotation(-mAzimuth);
-            txt_compass.setText(mAzimuth + "°");
-            txt_location.setText(NumberFormat.getNumberInstance(Locale.US).format(Math.round(myLocation.distanceTo(myDestination))) + " m");
-            System.out.println(mAzimuth);
-        } catch (Exception e) {
-            System.out.println(e);
-            txt_location.setText("I'm lost");
-
+            }
         }
     }
 
