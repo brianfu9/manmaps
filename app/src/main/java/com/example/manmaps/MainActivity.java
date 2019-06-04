@@ -177,11 +177,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
         if (myDestination != null) {
             try {
-		myLocation.setBearing(0.0);
+		myLocation.setBearing(0);
                 int bearing = Math.round(myLocation.bearingTo(myDestination));
                 int facing_direction = mAzimuth - bearing;
                 compass_img.setRotation(-facing_direction);
-                txt_compass.setText((facing_direction % 360) + "°");
+                txt_compass.setText(Math.floorMod(facing_direction, 360) + "°");
                 txt_location.setText(NumberFormat.getNumberInstance(Locale.US).format(Math.round(myLocation.distanceTo(myDestination))) + " m");
                 System.out.println("Azimuth: " + mAzimuth + "° bearing: " + bearing + "° facing: " + facing_direction + "°");
             } catch (Exception e) {
